@@ -2,6 +2,19 @@ from audioSegmentation import speaker_diarization
 import argparse
 from pydub import AudioSegment
 import os
+import shutil
+import inflect
+
+def convert_number_to_word(number):
+    p = inflect.engine()
+    tmp = p.number_to_words(number)
+    res = ''
+    for i in range(len(tmp)):
+        if i == 0:
+            res += tmp[i].upper()
+        else:
+            res += tmp[i]
+    return res
 
 def speakerDiarizationWrapper(inputFile, numSpeakers, useLDA):
     """Returns the list of classes, purity cluster and purity speaker"""
@@ -40,9 +53,13 @@ def sliceAudioSegments(inputFile, numSpeakers, useLDA, save_to):
             sliced_audio_dict[tmp_cls] += tmp
             
     # Iterate through sliced_audio_dict and save the result
+    try:
+        shutil.rmtree(save_to)
+    except:
+        pass
     os.makedirs(save_to)
     for i in range(numSpeakers):
-        sliced_audio_dict[i].export(save_to + '/' + str(i) + '.wav', format='wav')
+        sliced_audio_dict[i].export(save_to + '/speaker' + convert_number_to_word(i + 1) + '.wav', format='wav')
 
 if __name__ == '__main__':
     # Initialize the argparser    
@@ -62,9 +79,6 @@ if __name__ == '__main__':
     numSpeakers = int(args.num)
     useLDA = args.lda
     save_to = args.saveto
-    
-    print(inputFile, numSpeakers, useLDA)
-    print(type(inputFile), type(numSpeakers), type(useLDA))
     
     # Slice the audio into speaker segments
     sliceAudioSegments(inputFile, numSpeakers, useLDA, save_to)
