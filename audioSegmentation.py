@@ -1060,7 +1060,7 @@ def speaker_diarization(filename, n_speakers, mid_window=1.0, mid_step=0.1,
             plt.xlabel("number of clusters")
             plt.ylabel("average clustering's sillouette")
         plt.show()
-    return cls, purity_cluster_m, purity_speaker_m
+    return cls, purity_cluster_m, purity_speaker_m, num_speakers
 
 
 def speaker_diarization_evaluation(folder_name, lda_dimensions):

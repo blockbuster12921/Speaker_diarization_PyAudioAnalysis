@@ -6,24 +6,32 @@ import os
 def speakerDiarizationWrapper(inputFile, numSpeakers, useLDA):
     """Returns the list of classes, purity cluster and purity speaker"""
     if useLDA:
-        cls, purity_cluster_m, purity_speaker_m = speaker_diarization(inputFile, numSpeakers, lda_dim=5, plot_res=True)
+        cls, purity_cluster_m, purity_speaker_m, n_speakers = speaker_diarization(inputFile, numSpeakers, lda_dim=5, plot_res=True)
     else:
-        cls, purity_cluster_m, purity_speaker_m = speaker_diarization(inputFile, numSpeakers, lda_dim=0, plot_res=True)
-    return cls, purity_cluster_m, purity_speaker_m
+        cls, purity_cluster_m, purity_speaker_m, n_speakers = speaker_diarization(inputFile, numSpeakers, lda_dim=0, plot_res=True)
+    return cls, purity_cluster_m, purity_speaker_m, n_speakers
 
 def sliceAudioSegments(inputFile, numSpeakers, useLDA, save_to):
     """Slices the inputfile into numSpeakers"""
-    cls_list, purity_cluster_m, purity_speaker_m = speakerDiarizationWrapper(inputFile, numSpeakers, useLDA)
+    cls_list, purity_cluster_m, purity_speaker_m, n_speakers = speakerDiarizationWrapper(inputFile, numSpeakers, useLDA)
     input_audio = AudioSegment.from_wav(inputFile)
     min_window = len(input_audio) // len(cls_list)
     
     # Create an empty dictionary
     sliced_audio_dict = {}
     
+    # Choose the optimal numSpeakers in case it is not defined
+    if numSpeakers <= 0:
+        numSpeakers = n_speakers
+        print('Optimal number of speakers is ', numSpeakers)
+        cls_list, purity_cluster_m, purity_speaker_m, n_speakers = speakerDiarizationWrapper(inputFile, numSpeakers, useLDA)
+        
+    
     # Iterate over the number of speakers and initialize the slices
     for i in range(numSpeakers):
         sliced_audio_dict[i] = AudioSegment.empty()
-    
+        
+    input_audio = AudioSegment.from_wav(inputFile)
     # Iterate through the cls and put the audio segments into their classes
     for i in range(len(cls_list)):
         tmp_cls = cls_list[i]
