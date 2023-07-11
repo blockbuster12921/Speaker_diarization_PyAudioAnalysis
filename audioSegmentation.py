@@ -1185,6 +1185,3 @@ def music_thumbnailing(signal, sampling_rate, short_window=1.0, short_step=0.5,
 
     return short_step * i1, short_step * i2, short_step * j1, short_step * j2, \
         sim_matrix
-
-
-
