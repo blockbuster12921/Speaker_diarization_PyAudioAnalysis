@@ -1,0 +1,12 @@
+matplotlib
+pyaudioanalysis
+hmmlearn
+eyed3
+scipy
+numpy
+pydub
+scikit_learn
+tqdm
+plotly
+pandas
+imblearn
